@@ -1,0 +1,21 @@
+query ($id: String) {
+	repl(id: $id) {
+    ...on Repl {
+      hostedUrl(dotty: true)
+      config {
+        isServer
+      }
+      slug
+      owner {
+        ...on User {
+          username
+        }
+        
+        ...on Team {
+          username
+        }
+      }
+      language
+    }
+  }
+}
