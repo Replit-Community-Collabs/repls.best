@@ -24,14 +24,15 @@ class GraphQL {
         }).then(async (res) => {
             let data = await res.text();
 
-            //console.log(data); // IF YOU NEED TO DEBUG AN ERROR, UNCOMMENT THIS LINE
+            console.log(data); // IF YOU NEED TO DEBUG AN ERROR, UNCOMMENT THIS LINE nvm
 
             return res.json()
         }).catch(e => {
+            console.error(e)
             return { data: {}, errors: [e] }
         });
 
-        if (errors) throw new Error('GraphQL Error: \n[\n  ' + errors.join(',\n  ') + '\n]');
+        if (errors) throw new Error(errors);
         return data;
     }
 }

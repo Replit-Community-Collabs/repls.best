@@ -46,7 +46,7 @@ function updateData(){
           message = `Hey, @${data.repl.owner.username}! Congrats on getting your Repl on Trending! You're now eligible for a free \`repls.best\` domain. The default one for your repl is \`${domain}\`. Since your repl is not a webserver, it will redirect to the spotlight page, and is setup already.  \n*With ❤️ from [the RCC Team](https://replit.com/team/replit-community-efforts)*`;
         }//   Cosmic was here   
         
-        //bot.comment(message, repl)
+        //bot.comment(message, 'c4fb5130-5318-4c7c-8f32-5c795d04cb54')
         
       }) // Raadsel was also here:)
     })// CatR3kd was here!
