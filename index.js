@@ -23,7 +23,7 @@ const sendCommentMutation = fs.readFileSync('GQL/sendComment.graphql', 'utf-8');
 const GraphQL = require('./gql')
 const token = process.env.SID;
 const client = new GraphQL(token);
-//const bot = new (require('./bot'))(client)
+const bot = new (require('./bot'))(client)
 
 function updateData(){
   fs.writeFileSync('Data/Current.json', JSON.stringify({}));
@@ -41,9 +41,9 @@ function updateData(){
           // Just put like "Congrats from: @(usernames...)" where the usernames are just a bunch of bignames on replit. XP
           // Or something at the end like "For more info: https://repls.best" and on the site some stuff that makes it legit, like vouches or something
           message = 
-            `Hey, @${data.repl.owner.username}! Congrats on getting your Repl on Trending! You're now eligible for a free \`repls.best\` domain. The default one for your repl is \`${domain}\`. If you would like to claim this, please add \`${domain}\` as a domain in your repl and click verify.`;
+            `Hey, @${data.repl.owner.username}! Congrats on getting your Repl on Trending! You're now eligible for a free \`repls.best\` domain. The default one for your repl is \`${domain}\`. If you would like to claim this, please add \`${domain}\` as a domain in your repl and click verify.  \n*With ❤️ from [the RCC Team](https://replit.com/team/replit-community-efforts)*`;
         } else {
-          message = `Hey, @${data.repl.owner.username}! Congrats on getting your Repl on Trending! You're now eligible for a free \`repls.best\` domain. The default one for your repl is \`${domain}\`. Since your repl is not a webserver, it will redirect to the spotlight page, and is setup already.`;
+          message = `Hey, @${data.repl.owner.username}! Congrats on getting your Repl on Trending! You're now eligible for a free \`repls.best\` domain. The default one for your repl is \`${domain}\`. Since your repl is not a webserver, it will redirect to the spotlight page, and is setup already.  \n*With ❤️ from [the RCC Team](https://replit.com/team/replit-community-efforts)*`;
         }//   Cosmic was here   
         
         //bot.comment(message, repl)
