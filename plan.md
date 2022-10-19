@@ -6,7 +6,7 @@ Our epic game plan
 |:-|:-|
 | haroon | Backend + GraphQL |
 | CosmicBear | Moral Support | <!--lmao -->
-| Raadsel | Front-end + Some back-end + better moral support + fixing/improving some code <!-- I give better moral support then CosmicBear!!1!--> |
+| Raadsel | Front-end + Some back-end + API docs & hoping to understand and work on GraphQL API + fixing/improving some code <!-- I give better moral support then CosmicBear!!1!--> |
 | bddy | uh idk i was just invited lmao | <!--domain stuff? -->
 | PikachuB2005 | INSERT WHAT YOU ARE DOING HERE <!--obviously graphql -cosmic --> | <!-- haroon is doing graphql, idk if I can help with this ;-; -->
 | conspicuous | Front-end |
@@ -25,3 +25,4 @@ Our epic game plan
 - DNS STUFF AAAAAAAAAAA (haroon) <!-- should we use cloudflare? i have more experience with that - If you have more experience with that thats great!--> 
 - public api maybe <!--For what then? See when someone got a domain?-->
 - admin panel
+- Make the docs again (were in the broken repl and weren't pushed)

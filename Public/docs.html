@@ -1,0 +1,62 @@
+<!-- Docs by Raadsel. Up to date version was at Broken Repl. Maybe Haroon still has that one locally so for now this is temporary)-->
+<!DOCTYPE html>
+<html> <!--uses water.css-->
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Repls.best - API</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/dark.css">
+    <link rel="icon" type="image/x-icon" href="https://5895b253-7316-4557-b4fb-f3a24165a4ae.id.repl.co/static/assets/favicon.ico">
+    <link rel="stylesheet" href="Public/css/docs.css">
+<script>
+const contents = document.getElementById("contents");
+const items = document.querySelectorAll("section:not(:first-of-type)");
+
+for (item of items) {
+
+  let contentsItem = document.createElement("LI");
+  let contentsLink = document.createElement("A");
+
+  contentsLink.href = "#" + item.id;
+  contentsLink.innerText = item.firstElementChild.firstElementChild.innerText;
+
+  contentsItem.appendChild(contentsLink);
+  contents.appendChild(contentsItem);
+
+}
+</script>
+
+  </head> <!--Grammer janitor CatR3kd still has to review this btw-->
+  <body>
+    <h1>How to use the Repls.best Public API</h1><br>
+    <h2>Contents:</h2>
+    <li style="--c:#f1c40f;"><span><span></span> <a href="#current">Current eligible Repls</a><br>
+    <li style="--c:#f1c40f;"><span><span></span> <a href="#all">All</a><br>
+    <li style="--c:#f1c40f;"><span><span></span> <a href="#soon">Soon</a><br>
+      <hr><br>
+    
+    <section id="current"><div>
+    <h2>How to see all current Repls that are eligible for a repls.best subdomain</h2>
+    <p>Bash example:<br>
+<code>curl repls.best/api/current</code></p>
+    <p><a href="https://curlconverter.com">Click here</a> to convert it to another language</p>
+    </div></section>
+      
+    <hr>
+      
+    <section id="curallrent"><div>
+     <h2>How to see all eligible repls for a repls.best subdomain</h2>
+      <p>Bash example:<br>
+<code>curl repls.best/api/all</code></p>
+      <p><a href="https://curlconverter.com">Click here</a> to convert it to another language</p>
+    </div></section>
+      
+    <hr>
+      
+    <section id="Soon"><div>
+      <h2>Soon</h2>
+      <p>Soon there will be (maybe) more API endpoints!</p>
+    </div></section>
+<p><a href="/">Go back</a></p>
+</body>
+</html>

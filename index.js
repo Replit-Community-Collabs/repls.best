@@ -187,7 +187,7 @@ const path = require('path');
 const express = require('express');
 const app = express();
 
-
+ //Todo: Make API via GraphQL
 app.listen(8000, () => {
   console.log(`App listening on port 8000`);
 });
@@ -196,10 +196,15 @@ app.get('/', (req,res) => {
   res.sendFile(path.join(__dirname + '/Public/index.html'));
 });
 
-app.get('/all', (req, res) => {
+app.get('/docs', (req,res) => { //docs by Raadsel
+  res.sendFile(path.join(__dirname + '/Public/docs.html'));
+});
+
+
+app.get('/api/all', (req, res) => {
   res.sendFile(path.join(__dirname + '/Data/DB.json'));
 });
 
-app.get('/current', (req, res) => {
+app.get('/api/current', (req, res) => {
   res.sendFile(path.join(__dirname + '/Data/Current.json'));
 });
