@@ -14,6 +14,7 @@
 //For contacting I think a Replit bot (maybe a new one or G'day bot or something) if we want it to be automatic (which we want). Discord bot to contact people would even more sounds like a scam. And if you want you can make a discord server. Maybe we could moderate malicious repls also via Discord. But it would be unlikely that there will be a malicious repl on trending + there are not that much repls on trending so it would be easy to do with humans.
 
 // Are we gonna use express as website backend? + will the frond-end be in this repl or another one. I dont know how the automatic subdomain things go and if thats possible -- Raadsel
+
 // What's wrong with NextJS for Front + Back. Also, probably better in a new repl (Seriously, use threads please) - Dillon
 
 const fs = require('fs');
@@ -148,7 +149,7 @@ function checkData(){
       return;
     } else if(isEmpty('Data/Backup.json') == true){
       // Both DB and backup are empty
-      console.log('All data is lost.');
+      console.log('All data is lost. Very bad FUBAR'); //FOOBAR. Very bad if this happens :o
       fs.writeFileSync('Data/Backup.json', JSON.stringify({}));
       fs.writeFileSync('Data/DB.json', JSON.stringify({}));
 
@@ -182,18 +183,15 @@ function getFormattedDate() {
 
 // Server + API by CatR3kd
 
-// Do we make it so that you need an API key? <---------------------------------------
-
 const path = require('path');
 const express = require('express');
 const app = express();
 const { MAXREQUESTS, PERMIN } = require("./Data/ratelimits.json");
-const rateLimit = require("express-rate-limit");
+const imit = require("express-rate-limit");
 
 //Todo: Make API via GraphQL 
-//I am working on Ratelimits (raadsel)
 
-//Ratelimit
+//Ratelimit by Raadsel
 const limiter = rateLimit({	
   windowMs: PERMIN * 60 * 1000,
 	max: MAXREQUESTS,
@@ -212,7 +210,12 @@ app.get('/', (req,res) => {
   res.sendFile(path.join(__dirname + '/Public/index.html'));
 });
 
-app.get('/docs', (req,res) => { //docs by Raadsel
+// 2 docs pages:
+app.get('/docs', (req,res) => { //docs
+  res.sendFile(path.join(__dirname + '/Public/docs.html'));
+});
+
+app.get('/api', (req,res) => { //docs
   res.sendFile(path.join(__dirname + '/Public/docs.html'));
 });
 

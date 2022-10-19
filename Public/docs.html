@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width">
     <title>Repls.best - API</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/dark.css">
-    <link rel="icon" type="image/x-icon" href="https://5895b253-7316-4557-b4fb-f3a24165a4ae.id.repl.co/static/assets/favicon.ico">
+    <link rel="icon" type="image/x-icon" href="https://replit.com/public/icons/favicon-prompt-196.png">
     <link rel="stylesheet" href="Public/css/docs.css">
 <script>
 const contents = document.getElementById("contents");
@@ -25,14 +25,38 @@ for (item of items) {
 
 }
 </script>
-
+<style>
+  body {
+    background-color: ##140b7a;
+  }
+  
+  :target > div {
+    background-color: #49443c;
+    border-left: 3px solid #faa81a;
+  }
+  
+  section {
+    padding-top: 10px;
+  }
+  
+  section > div {
+    padding: 10px;
+  }
+  
+  h3 {
+    margin-top: 0;
+  }
+  
+  h2, p {
+    margin: 5px 0 10px;
+  }
+</style>
   </head> <!--Grammer janitor CatR3kd still has to review this btw-->
   <body>
     <h1>Repls.best Public API Guide</h1><br>
     <h2>Contents:</h2>
     <li style="--c:#f1c40f;"><span><span></span> <a href="#current">Current eligible Repls</a><br></span>
-    <li style="--c:#f1c40f;"><span><span></span> <a href="#all">All</a><br></span>
-    <li style="--c:#f1c40f;"><span><span></span> <a href="#soon">Soon</a><br></span>
+    <li style="--c:#f1c40f;"><span><span></span> <a href="#all">All eligible repls</a><br></span>
       <hr><br>
     
     <section id="current"><div>
@@ -45,7 +69,7 @@ for (item of items) {
       
     <hr>
       
-    <section id="curallrent"><div>
+    <section id="all"><div>
      <h2>GET all eligible repls</h2>
       <p>Sent a GET request to <code>https://repls.best/api/all</code></p>
       <p>Bash example:<br>
