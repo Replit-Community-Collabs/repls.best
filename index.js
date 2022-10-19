@@ -23,7 +23,9 @@ const sendCommentMutation = fs.readFileSync('GQL/sendComment.graphql', 'utf-8');
 const GraphQL = require('./gql')
 const token = process.env.SID;
 const client = new GraphQL(token);
-const bot = new (require('./bot'))(client)
+const bot = new (require('./bot'))(client);
+
+const { lightfetch } = require('lightfetch-node');
 
 function updateData(){
   fs.writeFileSync('Data/Current.json', JSON.stringify({}));
@@ -37,16 +39,47 @@ function updateData(){
         let domain = data.repl.slug.toLowerCase()+'.repls.best'
         if (data.repl.config.isServer || data.repl.language == "html") {
           // How do I make this not sound like some sort of scam hmm uh
-  				// Good question
-          // Just put like "Congrats from: @(usernames...)" where the usernames are just a bunch of bignames on replit. XP
-          // Or something at the end like "For more info: https://repls.best" and on the site some stuff that makes it legit, like vouches or something
+  				// I added a url to our team
           message = 
-            `Hey, @${data.repl.owner.username}! Congrats on getting your Repl on Trending! You're now eligible for a free \`repls.best\` domain. The default one for your repl is \`${domain}\`. If you would like to claim this, please add \`${domain}\` as a domain in your repl and click verify.  \n*With ❤️ from [the RCC Team](https://replit.com/team/replit-community-efforts)*`;
+            `Hey, @${data.repl.owner.username}! Congrats on getting your Repl on Trending! You're now eligible for a free \`repls.best\` domain. The default one for your repl is \`${domain}\`. If you would like to claim this, please add \`${domain}\` as a domain in your repl and click verify.  \n*With ❤️ from [The RCC Team](https://replit.com/team/replit-community-efforts)*`;
         } else {
-          message = `Hey, @${data.repl.owner.username}! Congrats on getting your Repl on Trending! You're now eligible for a free \`repls.best\` domain. The default one for your repl is \`${domain}\`. Since your repl is not a webserver, it will redirect to the spotlight page, and is setup already.  \n*With ❤️ from [the RCC Team](https://replit.com/team/replit-community-efforts)*`;
+          message = `Hey, @${data.repl.owner.username}! Congrats on getting your Repl on Trending! You're now eligible for a free \`repls.best\` domain. The default one for your repl is \`${domain}\`. Since your repl is not a webserver, it will redirect to the spotlight page, and is setup already.  \n*With ❤️ from [The RCC Team] (https://replit.com/team/replit-community-efforts)*`; //why RCC? its RCE right? nvm collab is the last C
         }//   Cosmic was here   
-        
-        //bot.comment(message, 'c4fb5130-5318-4c7c-8f32-5c795d04cb54')
+        var hookmsg = {
+  "content": "<@&1032369704507023424>",
+  "embeds": [
+    {
+      "title": "New repl to be approved!",
+      "description": "Approve via <@1032306356692205578>.",
+      "color": 65280,
+      "fields": [
+        {
+          "name": "Default Domain",
+          "value": `${domain}`,
+          "inline": true
+        },
+        {
+          "name": "Spotlight page",
+          "value": `https://replit.com/@${data.repl.owner.username}/${data.repl.slug}?v=1`, 
+          "inline": true
+        },
+        {
+          "name": "Webserver?",
+          "value": data.repl.config.isServer || data.repl.language == "html" ? "Yes" : "No",
+          "inline": true
+        }
+      ]
+    }
+  ],
+  "attachments": []
+}
+        lightfetch(process.env.HOOK, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(hookmsg)
+        }).then(r=>r.text()).then(console.log)// This is completely via DiscoHook and would be working but somehow isnt ;/  I thought the error was that it didnt accept ` because when I changed them to " I got another error at DiscoHook. (how to import vars tho)
         
       }) // Raadsel was also here:)
     })// CatR3kd was here!
@@ -111,7 +144,9 @@ function checkData(){
       return;
     } else if(isEmpty('Data/Backup.json') == true){
       // Both DB and backup are empty
-      console.log('All data is lost.');
+      console.log('All data is lost...'); 
+      // Raadsel here: It would be good id we sent a webhook msg here 
+      // Yeah 
       fs.writeFileSync('Data/Backup.json', JSON.stringify({}));
       fs.writeFileSync('Data/DB.json', JSON.stringify({}));
 
@@ -145,11 +180,25 @@ function getFormattedDate() {
 
 // Server + API by CatR3kd
 // GQL rewrite by Haroon
+// oh no he's not kidding guys we have to use gql );;;;;;;;;;;;;;;;;;;; i haven't found a good gql middleware for express
+// lol
 
-
+// Express server + API:
 const path = require('path');
 const express = require('express');
 const app = express();
+const { MAXREQUESTS, PERMIN } = require("./Data/ratelimits.json");
+const rateLimit = require("express-rate-limit");
+
+// added ratelimits again - Raadsel
+const limiter = rateLimit({
+	windowMs: PERMIN * 60 * 1000,
+	max: MAXREQUESTS,
+	standardHeaders: true,
+	legacyHeaders: false,
+})
+
+app.use("/api", limiter)
 
 
 app.listen(8000, () => {
@@ -160,10 +209,22 @@ app.get('/', (req,res) => {
   res.sendFile(path.join(__dirname + '/Public/index.html'));
 });
 
-app.get('/all', (req, res) => {
+app.get('/api', (req,res) => {
+  res.sendFile(path.join(__dirname + '/Public/docs.html'));
+});
+
+app.get('/docs', (req,res) => {
+  res.sendFile(path.join(__dirname + '/Public/docs.html'));
+});
+
+app.get('/api/all', (req, res) => {
   res.sendFile(path.join(__dirname + '/Data/DB.json'));
 });
 
-app.get('/current', (req, res) => {
+app.get('/api/current', (req, res) => {
   res.sendFile(path.join(__dirname + '/Data/Current.json'));
+});
+
+app.get('/api/team', (req, res) => {
+  res.send({ team: ["Raadsel", "Haroon", "CatR3kd", "DillonB07", "VulcanWM", "CosmicBear", "Conspicious", "sojs"], special: ["CommunityCollab"] }); 
 });

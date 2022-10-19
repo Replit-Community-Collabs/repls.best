@@ -24,7 +24,8 @@ class GraphQL {
         }).then(async (res) => {
             let data = await res.text();
 
-            console.log(data); // IF YOU NEED TO DEBUG AN ERROR, UNCOMMENT THIS LINE nvm
+            //console.log(data);
+            // ^^^^^^ IF YOU NEED TO DEBUG AN ERROR, UNCOMMENT THIS LINE
 
             return res.json()
         }).catch(e => {

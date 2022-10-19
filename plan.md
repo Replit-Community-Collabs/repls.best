@@ -2,6 +2,8 @@
 Our epic game plan
 ---------
 
+# FIX WEBHOOK AAAAA
+
 | User | What they're doing |
 |:-|:-|
 | haroon | Backend + GraphQL |
@@ -14,7 +16,7 @@ Our epic game plan
 | VulcanWM | Back-end + Some Front-end |
 | codingMASTER398 | Idea man \| Backend + frontend cleanings \| Saying goodmorning at school |
 | Highwayman | INSERT WHAT YOU ARE DOING HERE |
-| CatR3kd | ~~DB~~ creating api | <!-- just more cooler B) --> 
+| CatR3kd | ~~DB~~ ~~api~~ ~~docs~~ code janitor + gql hater | <!-- just more cooler B) --> 
 | sojs | INSERT WHAT YOU ARE DOING HERE |
 
 # What we need done

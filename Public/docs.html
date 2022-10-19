@@ -30,10 +30,7 @@ for (item of items) {
     background-color: ##140b7a;
   }
   
-  :target > div {
-    background-color: #49443c;
-    border-left: 3px solid #faa81a;
-  }
+
   
   section {
     padding-top: 10px;
@@ -52,15 +49,19 @@ for (item of items) {
   }
 </style>
   </head> <!--Grammer janitor CatR3kd still has to review this btw-->
+  <!-- Will do -->
   <body>
     <h1>Repls.best Public API Guide</h1><br>
     <h2>Contents:</h2>
     <li style="--c:#f1c40f;"><span><span></span> <a href="#current">Current eligible Repls</a><br></span>
-    <li style="--c:#f1c40f;"><span><span></span> <a href="#all">All eligible repls</a><br></span>
+    <li style="--c:#f1c40f;"><span><span></span> <a href="#all">All eligible repls</a><br>
+    <li style="--c:#f1c40f;"><span><span></span> <a href="#team">RCC Team members</a><br></span><br>
+    <h6>Hover over the titles of the topics for more info</h6>
+</span>
       <hr><br>
     
     <section id="current"><div>
-    <h2>GET all current eligible repls</h2>
+    <h2 title="Get all trending repls that currently are eligible for a repls.best subdomain">GET all current eligible repls</h2>
     <p>Sent a GET request to <code>https://repls.best/api/current</code>code></p>
     <p>Bash example: <br>
 <code>curl https://repls.best/api/current</code></p>
@@ -70,13 +71,23 @@ for (item of items) {
     <hr>
       
     <section id="all"><div>
-     <h2>GET all eligible repls</h2>
+     <h2 title="Get all Repls that are eligible for a repls.best subdomain">GET all eligible repls</h2>
       <p>Sent a GET request to <code>https://repls.best/api/all</code></p>
       <p>Bash example:<br>
 <code>curl https://repls.best/api/all</code></p>
       <p><a href="https://curlconverter.com">Other languages</a>
       <br>
       <b>Warning: Uses a lot of your bandwith. Be cautious.</b>
+      </p>
+    </div></section>
+      <hr>
+      
+    <section id="team"><div>
+     <h2 title="All Replit Community Collaboration team members in an array">GET all RCC team members</h2>
+      <p>Sent a GET request to <code>https://repls.best/api/team</code></p>
+      <p>Bash example:<br>
+<code>curl https://repls.best/api/team</code></p>
+      <p><a href="https://curlconverter.com">Other languages</a>
       </p>
     </div></section>
       
