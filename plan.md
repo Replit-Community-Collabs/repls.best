@@ -6,11 +6,11 @@ Our epic game plan
 |:-|:-|
 | haroon | Backend + GraphQL |
 | CosmicBear | Moral Support | <!--lmao -->
-| Raadsel | Front-end + Some back-end + API docs & hoping to understand and work on GraphQL API + fixing/improving some code <!-- I give better moral support then CosmicBear!!1!--> |
+| Raadsel | Front-end + Some back-end + API docs & hoping to understand and work on GraphQL API + Discord Bot<!-- I give better moral support then CosmicBear!!1!--> |
 | bddy | uh idk i was just invited lmao | <!--domain stuff? -->
 | PikachuB2005 | INSERT WHAT YOU ARE DOING HERE <!--obviously graphql -cosmic --> | <!-- haroon is doing graphql, idk if I can help with this ;-; -->
 | conspicuous | Front-end |
-| DillonB07 | Frontend help |
+| DillonB07 | Frontend help + Discord Bot |
 | VulcanWM | Back-end + Some Front-end |
 | codingMASTER398 | Idea man \| Backend + frontend cleanings \| Saying goodmorning at school |
 | Highwayman | INSERT WHAT YOU ARE DOING HERE |

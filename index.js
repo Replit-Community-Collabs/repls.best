@@ -15,52 +15,15 @@
 
 // Are we gonna use express as website backend? + will the frond-end be in this repl or another one. I dont know how the automatic subdomain things go and if thats possible -- Raadsel
 
-// What's wrong with NextJS for Front + Back. Also, probably better in a new repl (Seriously, use threads please) - Dillon
-
 const fs = require('fs');
 const trendingReplsQuery = fs.readFileSync('GQL/trendingRepls.graphql', 'utf-8');
 const getReplURLQuery = fs.readFileSync('GQL/getReplURL.graphql', 'utf-8');
-const sendCommentMutation = fs.readFileSync('GQL/getReplURL.graphql', 'utf-8');
+const sendCommentMutation = fs.readFileSync('GQL/sendComment.graphql', 'utf-8');
 
-// Better GQL Function
-// Courtesy @RayhanADev <3
-
-const { lightfetch } = require('lightfetch-node');
-
-class GraphQL {
-	constructor(token) {
-		this.headers = {
-			'X-Requested-With': 'XMLHttpRequest',
-			'Referrer': 'https://replit.com/',
-			'Cookie': token ? `connect.sid=${token};` : '',
-		};
-	}
-	async request(query, variables={}) {
-		const { data, errors } = await lightfetch('https://replit.com/graphql', {
-			method: 'POST',
-			headers: {
-        ...this.headers
-      },
-			body: {
-				query,
-				variables: JSON.stringify(variables),
-			}
-		}).then(async (res) => {
-      let data = await res.text();
-
-      //console.log(data); // IF YOU NEED TO DEBUG AN ERROR, UNCOMMENT THIS LINE
-
-      return res.json()
-    }).catch(e => {
-      return { data: {}, errors: [e] }
-    });
-
-		if (errors) throw new Error('GraphQL Error: \n[\n  ' + errors.join(',\n  ') + '\n]');
-		return data;
-	}
-}
-
-const client = new GraphQL();
+const GraphQL = require('./gql')
+const token = process.env.SID;
+const client = new GraphQL(token);
+//const bot = new (require('./bot'))(client)
 
 function updateData(){
   fs.writeFileSync('Data/Current.json', JSON.stringify({}));
@@ -78,13 +41,12 @@ function updateData(){
           // Just put like "Congrats from: @(usernames...)" where the usernames are just a bunch of bignames on replit. XP
           // Or something at the end like "For more info: https://repls.best" and on the site some stuff that makes it legit, like vouches or something
           message = 
-            `Hey, @${data.repl.owner.username}! Congrats on getting your Repl on Trending! You're now eligible for a free \`repls.best\` domain. The default one for your repl is \`${domain}\`. If you would like to claim this, please add \`${domain}\` as a domain in your repl and click verify.\n`;
+            `Hey, @${data.repl.owner.username}! Congrats on getting your Repl on Trending! You're now eligible for a free \`repls.best\` domain. The default one for your repl is \`${domain}\`. If you would like to claim this, please add \`${domain}\` as a domain in your repl and click verify.`;
         } else {
-          message = `Hey, @${data.repl.owner.username}! Congrats on getting your Repl on Trending! You're now eligible for a free \`repls.best\` domain. The default one for your repl is \`${domain}\`. Since your repl is not a webserver, it will redirect to the spotlight page, and is setup already.\n`;
+          message = `Hey, @${data.repl.owner.username}! Congrats on getting your Repl on Trending! You're now eligible for a free \`repls.best\` domain. The default one for your repl is \`${domain}\`. Since your repl is not a webserver, it will redirect to the spotlight page, and is setup already.`;
         }//   Cosmic was here   
-        console.log(message);
         
-        // sendMessage(message);
+        //bot.comment(message, repl)
         
       }) // Raadsel was also here:)
     })// CatR3kd was here!
@@ -149,7 +111,7 @@ function checkData(){
       return;
     } else if(isEmpty('Data/Backup.json') == true){
       // Both DB and backup are empty
-      console.log('All data is lost. Very bad FUBAR'); //FOOBAR. Very bad if this happens :o
+      console.log('All data is lost.');
       fs.writeFileSync('Data/Backup.json', JSON.stringify({}));
       fs.writeFileSync('Data/DB.json', JSON.stringify({}));
 
@@ -182,53 +144,26 @@ function getFormattedDate() {
 
 
 // Server + API by CatR3kd
+// GQL rewrite by Haroon
+
 
 const path = require('path');
 const express = require('express');
 const app = express();
-const { MAXREQUESTS, PERMIN } = require("./Data/ratelimits.json");
-const imit = require("express-rate-limit");
 
-//Todo: Make API via GraphQL 
-
-//Ratelimit by Raadsel
-const limiter = rateLimit({	
-  windowMs: PERMIN * 60 * 1000,
-	max: MAXREQUESTS,
-	standardHeaders: true,
-	legacyHeaders: false,
-})
 
 app.listen(8000, () => {
   console.log(`App listening on port 8000`);
 });
 
-//use ratelimiter
-app.use("/api", limiter)
-
 app.get('/', (req,res) => {
   res.sendFile(path.join(__dirname + '/Public/index.html'));
 });
 
-// 2 docs pages:
-app.get('/docs', (req,res) => { //docs
-  res.sendFile(path.join(__dirname + '/Public/docs.html'));
-});
-
-app.get('/api', (req,res) => { //docs
-  res.sendFile(path.join(__dirname + '/Public/docs.html'));
-});
-
-
-app.get('/api/all', (req, res) => {
+app.get('/all', (req, res) => {
   res.sendFile(path.join(__dirname + '/Data/DB.json'));
 });
 
-app.get('/api/current', (req, res) => {
+app.get('/current', (req, res) => {
   res.sendFile(path.join(__dirname + '/Data/Current.json'));
-});
-
-app.use((req, res, next) => {
-  res.status(404).send({ Error: "Page not found" });
-  // creates a 404 page if the endpoints doesnt exist
 });
