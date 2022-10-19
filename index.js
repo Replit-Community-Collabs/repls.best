@@ -14,6 +14,7 @@
 //For contacting I think a Replit bot (maybe a new one or G'day bot or something) if we want it to be automatic (which we want). Discord bot to contact people would even more sounds like a scam. And if you want you can make a discord server. Maybe we could moderate malicious repls also via Discord. But it would be unlikely that there will be a malicious repl on trending + there are not that much repls on trending so it would be easy to do with humans.
 
 // Are we gonna use express as website backend? + will the frond-end be in this repl or another one. I dont know how the automatic subdomain things go and if thats possible -- Raadsel
+// What's wrong with NextJS for Front + Back. Also, probably better in a new repl (Seriously, use threads please) - Dillon
 
 const fs = require('fs');
 const trendingReplsQuery = fs.readFileSync('GQL/trendingRepls.graphql', 'utf-8');
@@ -181,16 +182,31 @@ function getFormattedDate() {
 
 // Server + API by CatR3kd
 
-
+// Do we make it so that you need an API key? <---------------------------------------
 
 const path = require('path');
 const express = require('express');
 const app = express();
+const { MAXREQUESTS, PERMIN } = require("./Data/ratelimits.json");
+const rateLimit = require("express-rate-limit");
 
- //Todo: Make API via GraphQL
+//Todo: Make API via GraphQL 
+//I am working on Ratelimits (raadsel)
+
+//Ratelimit
+const limiter = rateLimit({	
+  windowMs: PERMIN * 60 * 1000,
+	max: MAXREQUESTS,
+	standardHeaders: true,
+	legacyHeaders: false,
+})
+
 app.listen(8000, () => {
   console.log(`App listening on port 8000`);
 });
+
+//use ratelimiter
+app.use("/api", limiter)
 
 app.get('/', (req,res) => {
   res.sendFile(path.join(__dirname + '/Public/index.html'));
@@ -207,4 +223,9 @@ app.get('/api/all', (req, res) => {
 
 app.get('/api/current', (req, res) => {
   res.sendFile(path.join(__dirname + '/Data/Current.json'));
+});
+
+app.use((req, res, next) => {
+  res.status(404).send({ Error: "Page not found" });
+  // creates a 404 page if the endpoints doesnt exist
 });
