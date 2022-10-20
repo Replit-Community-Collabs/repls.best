@@ -16,23 +16,23 @@
 
 
 const fs = require('fs');
-const trendingReplsQuery = fs.readFileSync('GQL/trendingRepls.graphql', 'utf-8');
-const getReplURLQuery = fs.readFileSync('GQL/getReplURL.graphql', 'utf-8');
-const sendCommentMutation = fs.readFileSync('GQL/sendComment.graphql', 'utf-8');
+const trendingReplsQuery = process.env.GQL_QUERY_TRENDING_REPLS
+const getReplURLQuery = process.env.GQL_QUERY_REPL_URL
 
 const GraphQL = require('./gql')
 const token = process.env.SID;
 const client = new GraphQL(token);
 const bot = new (require('./bot'))(client);
 
-const { lightfetch } = require('lightfetch-node');
+const { lightfetch } = require('lightfetch-node'); //is this used for anything? We are using the normal fetch for the webhook  
 
 const fetch = require('node-fetch'); //Raadsel here, somehow discord webhooks only work trough node-fetch and not lightfetch 
 
-const replteam = { team: ["Raadsel", "Haroon", "CatR3kd", "DillonB07", "VulcanWM","codingMASTER398", "CosmicBear", "Conspiciuous", "sojs"], special: ["CommunityCollab"] } //if more people join they can add themselves here 
+const replteam = { team: ["Raadsel", "haroon", "CatR3kd", "DillonB07", "VulcanWM", "codingMASTER398", "CosmicBear", "conspicious", "sojs", "bddy"], special: ["CommunityCollab"] } //if more people join they can add themselves here 
 
-
-
+replteam.schemaUsers = [
+  ...replteam.team
+]
 
 function updateData(){
   fs.writeFileSync('Data/Current.json', JSON.stringify({}));
@@ -41,6 +41,7 @@ function updateData(){
     repls.forEach(repl => {
       client.request(getReplURLQuery, { id: repl }).then(data => {
         saveToDB(data.repl);
+        console.log(repl)
         
         let message;
         let domain = data.repl.slug.toLowerCase()+'.repls.best'
@@ -129,15 +130,21 @@ function saveToDB(repl){
   if(db.hasOwnProperty(replName)){
     delete db[replName];
   }
-  
-  const desc = `${replName.replaceAll('-', ' ')}: A(n) ${repl.language} repl by @${repl.owner.username}! URL: ${repl.hostedUrl} Most recent date: ${getFormattedDate()}`;
 
+  const obj = {
+    name: replName.replaceAll('-',' '),
+    language: repl.language,
+    owner: repl.owner.username,
+    url: repl.hostedUrl,
+    update: getFormattedDate()
+  }
+  
   // Add to DB
-  db[replName] = desc;
+  db[replName] = obj;
   fs.writeFileSync('Data/DB.json', JSON.stringify(db));
 
   // Add to current
-  current[replName] = desc;
+  current[replName] = obj;
   fs.writeFileSync('Data/Current.json', JSON.stringify(current));
   
   // Update backup file
@@ -203,6 +210,7 @@ function getFormattedDate() {
 // GQL rewrite by Haroon
 // oh no he's not kidding guys we have to use gql );;;;;;;;;;;;;;;;;;;; i haven't found a good gql middleware for express
 // lol
+// Okay what if I make a different route for gql but we still use REST at the same time
 
 // Express server + API:
 const path = require('path');
@@ -210,6 +218,39 @@ const express = require('express');
 const app = express();
 const { MAXREQUESTS, PERMIN } = require("./Data/ratelimits.json");
 const rateLimit = require("express-rate-limit");
+
+const { graphqlHTTP } = require('express-graphql');
+const { buildSchema } = require('graphql');
+
+/*
+{
+    name: replName.replaceAll('-',' '),
+    language: repl.language,
+    owner: repl.owner.username,
+    url: repl.hostedUrl,
+    update: getFormattedDate()
+  }
+*/
+
+const schema = buildSchema(fs.readFileSync('./schema.graphql', 'utf-8'))
+
+const resolver = {
+  domains({ current }) {
+    const data = JSON.parse(fs.readFileSync(`./Data/${current ? 'Current' : 'DB'}.json`, 'utf-8'))
+
+    let resp = []
+    
+    Object.keys(data).forEach((d, i) => {
+      let e = data[d]
+      resp.push(e)
+    })
+
+    return resp
+  },
+  team() {
+    return replteam.team
+  }
+}
 
 // added ratelimits again - Raadsel
 const limiter = rateLimit({
@@ -229,7 +270,7 @@ app.listen(8000, () => {
 app.get('/', (req,res) => {
   res.sendFile(path.join(__dirname + '/Public/index.html'));
 });
-
+//public API
 app.get('/api', (req,res) => {
   res.sendFile(path.join(__dirname + '/Public/docs.html'));
 });
@@ -249,6 +290,36 @@ app.get('/api/current', (req, res) => {
 app.get('/api/team', (req, res) => {
   res.send(replteam); 
 });
+
+const graphql = require('graphql');
+
+function Introspection(req) {
+  return function(context) {
+    return {
+      Field(node) {
+        if (!replteam.schemaUsers.includes(req.get('X-Replit-User-Name'))) {
+          if (node.name.value === '__schema' || node.name.value === '__type') {
+            let error = new graphql.GraphQLError(
+              'GraphQL introspection is only allowed for staff members and some whitelisted users. Login via https://replit.com/auth_with_repl_site?domain=replsbest-working.replit-community-efforts.repl.co'
+            )
+  				  context.reportError(error);
+  			  }	
+        }
+      }
+    }
+  }
+}
+
+app.use('/graphql', (req, res, next) => {
+  graphqlHTTP({
+    schema,
+    rootValue: resolver,
+    graphiql: true,
+    validationRules: [
+      Introspection(req)
+    ]
+  })(req, res, next)
+})
 
 //private API here (with key)
 

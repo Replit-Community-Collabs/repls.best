@@ -1,4 +1,4 @@
-const createComment = require('fs').readFileSync('./GQL/sendComment.graphql', 'utf-8');
+const createComment = process.env.GQL_MUTATION_SEND_COMMENT
 
 /** Class to comment on Replit repls */
 class Bot {

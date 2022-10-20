@@ -23,7 +23,7 @@ Our epic game plan
 
 - API
 
-|API | WHat it needs to do | done? | 
+|API | WHat it needs to do | done? | <!-- If you are going t odo something, DO THIS-->
 |:-|:-|:-|
 |GET| all domains (linked + awaiting moderation)| NO |
 |GET| all domains awaiting moderation| NO |

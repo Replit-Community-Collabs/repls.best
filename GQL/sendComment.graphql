@@ -1,6 +1,0 @@
-mutation ($body: String!, $replId: String) {
-  createComment(input: {
-    body: $body,
-    replId: $replId
-  })
-}

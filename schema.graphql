@@ -1,0 +1,20 @@
+type Query {
+  # Get all domains. The argument specifies whether to get the current db or a "cached" DB.
+  domains(current: Boolean): [DomainList]
+  # Find out who helped make this project!
+  team: [String]
+}
+
+# Type for a domain.
+type DomainList {
+  # The repl's slug
+  name: String!
+  # The repl's language. Will mostly be "nix".
+  language: String!
+  # Who owns the repl?
+  owner: String!
+  # The URL to access this repl's webserver.
+  url: String!
+  # When this database entry was last updated.
+  update: String!
+}
