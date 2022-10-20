@@ -27,7 +27,7 @@ const bot = new (require('./bot'))(client);
 
 const { lightfetch } = require('lightfetch-node');
 
-const fetch = require('node-fetch'); //normal fetch only works with discord webhook
+const fetch = require('node-fetch'); //Raadsel here, somehow discord webhooks only work trough node-fetch and not lightfetch 
 
 const replteam = { team: ["Raadsel", "Haroon", "CatR3kd", "DillonB07", "VulcanWM","codingMASTER398", "CosmicBear", "Conspiciuous", "sojs"], special: ["CommunityCollab"] } //if more people join they can add themselves here 
 
@@ -52,8 +52,10 @@ function updateData(){
         } else {
           message = `Hey, @${data.repl.owner.username}! Congrats on getting your Repl on Trending! You're now eligible for a free \`repls.best\` domain. The default one for your repl is \`${domain}\`. Since your repl is not a webserver, it will redirect to the spotlight page, and is setup already.  \n*With ❤️ from [The RCC Team] (https://replit.com/team/replit-community-efforts)*`; //why RCC? its RCE right? nvm collab is the last C
         }//   Cosmic was here   
+
+        // JSON that gets sent to the webhook
         var hookmsg = {
-  "content": "no ping `<@&1032369704507023424>`",
+  "content": "`<@&1032369704507023424>`",
   "embeds": [
     {
       "title": "New repl to be approved!",
@@ -86,7 +88,11 @@ function updateData(){
 }
 
         
-        /* uncomment this when the webhook HAS to sent. It causes some spam in the #moderate-repls channel
+        //uncomment this when the webhook HAS to sent. It causes some spam in the #moderate-repls channel - Raadsel.
+        
+        
+        //sent data to the webhook
+        /*  
         fetch(process.env.HOOK, { 
           method: 'POST',
           headers: {
@@ -244,3 +250,22 @@ app.get('/api/team', (req, res) => {
   res.send(replteam); 
 });
 
+//private API here (with key)
+
+const keys = process.env.PRIVATEAPIKEY
+
+
+app.get("/api/private/", function (req, res) {
+  const key = req.query.t; 
+
+  if (!key) {
+    res.send({ Error: "No key given" }); 
+    // if no token provided send error
+  } else if (!key == keys) {
+    res.send({ Error: "Key provided invalid" }); 
+    // if token doesnt match any in the array send error
+  } else {
+    res.send({ info: `soon^tm`, Error: false });
+    // if query and token are provided send whatever you want
+  }
+});

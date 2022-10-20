@@ -2,7 +2,7 @@
 Our epic game plan
 ---------
 
-# FIX WEBHOOK AAAAA
+
 
 | User | What they're doing |
 |:-|:-|
@@ -20,6 +20,20 @@ Our epic game plan
 | sojs | INSERT WHAT YOU ARE DOING HERE |
 
 # What we need done
+
+- API
+
+|API | WHat it needs to do | done? | 
+|:-|:-|:-|
+|GET| all domains (linked + awaiting moderation)| NO |
+|GET| all domains awaiting moderation| NO |
+|GET| all domains that are linked| NO |
+|PUT| the moderated info to true| NO |
+|PUT| the moderated info to fals| NO |
+
+
+
+
 - Domain (bddy) <!-- Ayy bddy -->
 - malicious subdomain solution (solution found (DC bot & webhook)) <!-- manual approval? I would use a discord bot + server for that, but nonmanual is preferable -->  <!-- If it's a trending Repl, why not do it automatically? -->
 - replit bot (coding398/haroon)
