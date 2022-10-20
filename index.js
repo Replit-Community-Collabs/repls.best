@@ -13,7 +13,7 @@
 
 //For contacting I think a Replit bot (maybe a new one or G'day bot or something) if we want it to be automatic (which we want). Discord bot to contact people would even more sounds like a scam. And if you want you can make a discord server. Maybe we could moderate malicious repls also via Discord. But it would be unlikely that there will be a malicious repl on trending + there are not that much repls on trending so it would be easy to do with humans.
 
-// Are we gonna use express as website backend? + will the frond-end be in this repl or another one. I dont know how the automatic subdomain things go and if thats possible -- Raadsel
+
 
 const fs = require('fs');
 const trendingReplsQuery = fs.readFileSync('GQL/trendingRepls.graphql', 'utf-8');
@@ -26,6 +26,13 @@ const client = new GraphQL(token);
 const bot = new (require('./bot'))(client);
 
 const { lightfetch } = require('lightfetch-node');
+
+const fetch = require('node-fetch'); //normal fetch only works with discord webhook
+
+const replteam = { team: ["Raadsel", "Haroon", "CatR3kd", "DillonB07", "VulcanWM","codingMASTER398", "CosmicBear", "Conspiciuous", "sojs"], special: ["CommunityCollab"] } //if more people join they can add themselves here 
+
+
+
 
 function updateData(){
   fs.writeFileSync('Data/Current.json', JSON.stringify({}));
@@ -46,7 +53,7 @@ function updateData(){
           message = `Hey, @${data.repl.owner.username}! Congrats on getting your Repl on Trending! You're now eligible for a free \`repls.best\` domain. The default one for your repl is \`${domain}\`. Since your repl is not a webserver, it will redirect to the spotlight page, and is setup already.  \n*With ❤️ from [The RCC Team] (https://replit.com/team/replit-community-efforts)*`; //why RCC? its RCE right? nvm collab is the last C
         }//   Cosmic was here   
         var hookmsg = {
-  "content": "<@&1032369704507023424>",
+  "content": "no ping `<@&1032369704507023424>`",
   "embeds": [
     {
       "title": "New repl to be approved!",
@@ -60,7 +67,7 @@ function updateData(){
         },
         {
           "name": "Spotlight page",
-          "value": `https://replit.com/@${data.repl.owner.username}/${data.repl.slug}?v=1`, 
+          "value": `https://replit.com/@${data.repl.owner.username}/${data.repl.slug}?v=1`,
           "inline": true
         },
         {
@@ -68,18 +75,26 @@ function updateData(){
           "value": data.repl.config.isServer || data.repl.language == "html" ? "Yes" : "No",
           "inline": true
         }
-      ]
+      ],
+      "footer": {
+        "text": "repls.best!",
+        "icon_url": "https://blog.replit.com/images/logo.svg"
+      }
     }
   ],
   "attachments": []
 }
-        lightfetch(process.env.HOOK, {
+
+        
+        /* uncomment this when the webhook HAS to sent. It causes some spam in the #moderate-repls channel
+        fetch(process.env.HOOK, { 
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify(hookmsg)
-        }).then(r=>r.text()).then(console.log)// This is completely via DiscoHook and would be working but somehow isnt ;/  I thought the error was that it didnt accept ` because when I changed them to " I got another error at DiscoHook. (how to import vars tho)
+        }).then(r=>r.text()).then(console.log);
+        */
         
       }) // Raadsel was also here:)
     })// CatR3kd was here!
@@ -226,5 +241,6 @@ app.get('/api/current', (req, res) => {
 });
 
 app.get('/api/team', (req, res) => {
-  res.send({ team: ["Raadsel", "Haroon", "CatR3kd", "DillonB07", "VulcanWM", "CosmicBear", "Conspicious", "sojs"], special: ["CommunityCollab"] }); 
+  res.send(replteam); 
 });
+

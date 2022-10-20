@@ -8,7 +8,7 @@ Our epic game plan
 |:-|:-|
 | haroon | Backend + GraphQL |
 | CosmicBear | Moral Support | <!--lmao -->
-| Raadsel | Front-end + Some back-end + API docs & hoping to understand and work on GraphQL API + Discord Bot<!-- I give better moral support then CosmicBear!!1!--> |
+| Raadsel | Front-end + Some back-end + ~~API + docs~~ & hoping to understand and work on GraphQL API + Discord Bot<!-- I give better moral support then CosmicBear!!1!--> |
 | bddy | uh idk i was just invited lmao | <!--domain stuff? -->
 | PikachuB2005 | INSERT WHAT YOU ARE DOING HERE <!--obviously graphql -cosmic --> | <!-- haroon is doing graphql, idk if I can help with this ;-; -->
 | conspicuous | Front-end |
@@ -21,10 +21,11 @@ Our epic game plan
 
 # What we need done
 - Domain (bddy) <!-- Ayy bddy -->
-- malicious subdomain solution (unassigned) <!-- manual approval? I would use a discord bot + server for that, but nonmanual is preferable -->  <!-- If it's a trending Repl, why not do it automatically? -->
+- malicious subdomain solution (solution found (DC bot & webhook)) <!-- manual approval? I would use a discord bot + server for that, but nonmanual is preferable -->  <!-- If it's a trending Repl, why not do it automatically? -->
 - replit bot (coding398/haroon)
+- Discord bot (Raadsel, conspicuous & DillonB07)
 - front-end (conspicuous) [Figma prototype](https://www.figma.com/file/MZWlrNJagX0AwV6VkccTO1/repls.best) <!--Maybe that it shows random repls with  a subdomain on the hompage-->
 - DNS STUFF AAAAAAAAAAA (haroon) <!-- should we use cloudflare? i have more experience with that - If you have more experience with that thats great!--> 
-- public api maybe <!--For what then? See when someone got a domain?-->
+- public api (raadsel & catR8kd - Done)<!--For what then? See when someone got a domain?-->
 - admin panel
-- Make the docs again (were in the broken repl and weren't pushed)
+- Make the docs again (raadsel & catR8kd - Done)
