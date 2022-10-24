@@ -18,18 +18,19 @@ Our epic game plan
 | Highwayman | INSERT WHAT YOU ARE DOING HERE |
 | CatR3kd | ~~DB~~ ~~api~~ ~~docs~~ code janitor + gql hater | <!-- just more cooler B) --> 
 | sojs | INSERT WHAT YOU ARE DOING HERE |
+| MNA4 | INSERT WHAT YOU ARE DOING HERE |
 
 # What we need done
 
 - API
 
-|API | WHat it needs to do | done? | <!-- If you are going t odo something, DO THIS-->
+| API | WHat it needs to do | done? | <!-- If you are going todo something, DO THIS-->
 |:-|:-|:-|
-|GET| all domains (linked + awaiting moderation)| NO |
-|GET| all domains awaiting moderation| NO |
-|GET| all domains that are linked| NO |
-|PUT| the moderated info to true| NO |
-|PUT| the moderated info to fals| NO |
+| GET | all domains (linked + awaiting moderation) | NO |
+| GET | all domains awaiting moderation | NO |
+| GET | all domains that are linked | NO |
+| PUT | the moderated info to true | NO |
+| PUT | the moderated info to fals | NO | <!-- Why are the tables broken?????? -->
 
 
 

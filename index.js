@@ -23,8 +23,7 @@ const GraphQL = require('./gql')
 const token = process.env.SID;
 const client = new GraphQL(token);
 const bot = new (require('./bot'))(client);
-
-const { lightfetch } = require('lightfetch-node'); //is this used for anything? We are using the normal fetch for the webhook  
+//removed light fetch
 
 const fetch = require('node-fetch'); //Raadsel here, somehow discord webhooks only work trough node-fetch and not lightfetch 
 
@@ -40,68 +39,10 @@ function updateData(){
     let repls = data.trendingReplPosts.map(({repl}) => repl.id)
     repls.forEach(repl => {
       client.request(getReplURLQuery, { id: repl }).then(data => {
-        saveToDB(data.repl);
-        console.log(repl)
+        //   Cosmic was here
         
-        let message;
-        let domain = data.repl.slug.toLowerCase()+'.repls.best'
-        if (data.repl.config.isServer || data.repl.language == "html") {
-          // How do I make this not sound like some sort of scam hmm uh
-  				// I added a url to our team
-          message = 
-            `Hey, @${data.repl.owner.username}! Congrats on getting your Repl on Trending! You're now eligible for a free \`repls.best\` domain. The default one for your repl is \`${domain}\`. If you would like to claim this, please add \`${domain}\` as a domain in your repl and click verify.  \n*With ❤️ from [The RCC Team](https://replit.com/team/replit-community-efforts)*`;
-        } else {
-          message = `Hey, @${data.repl.owner.username}! Congrats on getting your Repl on Trending! You're now eligible for a free \`repls.best\` domain. The default one for your repl is \`${domain}\`. Since your repl is not a webserver, it will redirect to the spotlight page, and is setup already.  \n*With ❤️ from [The RCC Team] (https://replit.com/team/replit-community-efforts)*`; //why RCC? its RCE right? nvm collab is the last C
-        }//   Cosmic was here   
-
-        // JSON that gets sent to the webhook
-        var hookmsg = {
-  "content": "`<@&1032369704507023424>`",
-  "embeds": [
-    {
-      "title": "New repl to be approved!",
-      "description": "Approve via <@1032306356692205578>.",
-      "color": 65280,
-      "fields": [
-        {
-          "name": "Default Domain",
-          "value": `${domain}`,
-          "inline": true
-        },
-        {
-          "name": "Spotlight page",
-          "value": `https://replit.com/@${data.repl.owner.username}/${data.repl.slug}?v=1`,
-          "inline": true
-        },
-        {
-          "name": "Webserver?",
-          "value": data.repl.config.isServer || data.repl.language == "html" ? "Yes" : "No",
-          "inline": true
-        }
-      ],
-      "footer": {
-        "text": "repls.best!",
-        "icon_url": "https://blog.replit.com/images/logo.svg"
-      }
-    }
-  ],
-  "attachments": []
-}
-
-        
-        //uncomment this when the webhook HAS to sent. It causes some spam in the #moderate-repls channel - Raadsel.
-        
-        
-        //sent data to the webhook
-        /*  
-        fetch(process.env.HOOK, { 
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(hookmsg)
-        }).then(r=>r.text()).then(console.log);
-        */
+        // Send verification
+        sendVerification(data);
         
       }) // Raadsel was also here:)
     })// CatR3kd was here!
@@ -110,6 +51,85 @@ function updateData(){
 
 updateData();
 setInterval(updateData, 60000);
+
+
+
+// Verification and creation steps by CatR3kd
+
+
+
+function createSubdomain(){
+  // No idea how to do this
+}
+
+// Function to be called once a repl is verified
+function createEntry(data, id){
+  sendReplMessage(data, id);
+  saveToDB(data.repl);
+  createSubdomain();
+}
+
+// Verify via Discord webhook
+function sendVerification(data){
+  const db = JSON.parse(fs.readFileSync('Data/DB.json'));
+  if(db.hasOwnProperty(data.repl.slug)) return;
+  
+  let domain = data.repl.slug.toLowerCase()+'.repls.best';
+  const hookmsg = {
+    "content": "`<@&1032369704507023424>`",
+    "embeds": [
+      {
+        "title": "New repl to be approved!",
+        "description": "Approve via <@1032306356692205578>.",
+        "color": 65280,
+        "fields": [
+          {
+            "name": "Default Domain",
+            "value": `${domain}`,
+            "inline": true
+          },
+          {
+            "name": "Spotlight page",
+            "value": `https://replit.com/@${data.repl.owner.username}/${data.repl.slug}?v=1`,
+            "inline": true
+          },
+          {
+            "name": "Webserver?",
+            "value": data.repl.config.isServer || data.repl.language ==  "html" ? "Yes" : "No",
+            "inline": true
+          }
+        ],
+        "footer": {
+          "text": "repls.best!",
+          "icon_url": "https://blog.replit.com/images/logo.svg"
+        }
+      }
+    ],
+    "attachments": []
+  }
+
+        
+        
+  fetch(process.env.HOOK, { 
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(hookmsg)
+  }).then(r=>r.text()).then(console.log);
+}
+
+function sendReplMessage(data, id){
+  let message;
+  let domain = data.repl.slug.toLowerCase()+'.repls.best';
+  if (data.repl.config.isServer || data.repl.language == "html") {
+    message = `Hey, @${data.repl.owner.username}! Congrats on getting your Repl on Trending! You're now eligible for a free \`repls.best\` domain. The default one for your repl is \`${domain}\`. If you would like to claim this, please add \`${domain}\` as a domain in your repl and click verify.  \n*With ❤️ from [The RCC Team](https://replit.com/team/replit-community-efforts)*`;
+  } else {
+    message = `Hey, @${data.repl.owner.username}! Congrats on getting your Repl on Trending! You're now eligible for a free \`repls.best\` domain. The default one for your repl is \`${domain}\`. Since your repl is not a webserver, it will redirect to the spotlight page, and is setup already.  \n*With ❤️ from [The RCC Team] (https://replit.com/team/replit-community-efforts)*`;
+  }
+
+  bot.comment(id, message);
+}
 
 
 
@@ -132,11 +152,10 @@ function saveToDB(repl){
   }
 
   const obj = {
-    name: replName.replaceAll('-',' '),
+    name: replName,
     language: repl.language,
     owner: repl.owner.username,
-    url: repl.hostedUrl,
-    update: getFormattedDate()
+    url: repl.hostedUrl
   }
   
   // Add to DB
@@ -198,12 +217,6 @@ function isEmpty(path) {
 }
 
 
-// Get current date
-function getFormattedDate() {
-  var date = new Date();
-  return(date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " " +  date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds());
-}
-
 
 
 // Server + API by CatR3kd
@@ -227,8 +240,7 @@ const { buildSchema } = require('graphql');
     name: replName.replaceAll('-',' '),
     language: repl.language,
     owner: repl.owner.username,
-    url: repl.hostedUrl,
-    update: getFormattedDate()
+    url: repl.hostedUrl
   }
 */
 
@@ -277,17 +289,17 @@ app.get('/api', (req,res) => {
 
 app.get('/docs', (req,res) => {
   res.sendFile(path.join(__dirname + '/Public/docs.html'));
-});
+}); //docs
 
-app.get('/api/all', (req, res) => {
+app.get('/api/all', (req, res) => { //all repls in DB
   res.sendFile(path.join(__dirname + '/Data/DB.json'));
 });
 
-app.get('/api/current', (req, res) => {
+app.get('/api/current', (req, res) => { //see current trending repls
   res.sendFile(path.join(__dirname + '/Data/Current.json'));
 });
 
-app.get('/api/team', (req, res) => {
+app.get('/api/team', (req, res) => { //repl team API
   res.send(replteam); 
 });
 
@@ -331,12 +343,12 @@ app.get("/api/private/", function (req, res) {
 
   if (!key) {
     res.send({ Error: "No key given" }); 
-    // if no token provided send error
+
   } else if (!key == keys) {
     res.send({ Error: "Key provided invalid" }); 
-    // if token doesnt match any in the array send error
+
   } else {
     res.send({ info: `soon^tm`, Error: false });
-    // if query and token are provided send whatever you want
+
   }
 });
