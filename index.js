@@ -16,10 +16,10 @@
 
 
 const fs = require('fs');
-const trendingReplsQuery = process.env.GQL_QUERY_TRENDING_REPLS
-const getReplURLQuery = process.env.GQL_QUERY_REPL_URL
+const trendingReplsQuery = process.env.GQL_QUERY_TRENDING_REPLS;
+const getReplURLQuery = process.env.GQL_QUERY_REPL_URL;
 
-const GraphQL = require('./gql')
+const GraphQL = require('./gql');
 const token = process.env.SID;
 const client = new GraphQL(token);
 const bot = new (require('./bot'))(client);
@@ -37,20 +37,22 @@ function updateData(){
   fs.writeFileSync('Data/Current.json', JSON.stringify({}));
   client.request(trendingReplsQuery).then(data => {
     let repls = data.trendingReplPosts.map(({repl}) => repl.id)
-    repls.forEach(repl => {
-      client.request(getReplURLQuery, { id: repl }).then(data => {
-        //   Cosmic was here
-        
+
+    // Updated to 10 seconds between request
+    let replCount = 0;
+    const verifyInterval = setInterval(function(){
+      client.request(getReplURLQuery, { id: repls[replCount] }).then(data => {
         // Send verification
         sendVerification(data);
-        
-      }) // Raadsel was also here:)
-    })// CatR3kd was here!
+
+        if(replCount >= 5) clearInterval(verifyInterval);
+      });
+    }, 10000);
   })
 }
 
 updateData();
-setInterval(updateData, 60000);
+setInterval(updateData, 5 * 60 * 1000);
 
 
 
@@ -241,7 +243,7 @@ const { buildSchema } = require('graphql');
     language: repl.language,
     owner: repl.owner.username,
     url: repl.hostedUrl
-  }
+  `}`
 */
 
 const schema = buildSchema(fs.readFileSync('./schema.graphql', 'utf-8'))
