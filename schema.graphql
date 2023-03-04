@@ -1,12 +1,17 @@
 type Query {
   # Get all domains. The argument specifies whether to get the current db or a "cached" DB.
-  domains(current: Boolean): [DomainList]
+  domains(current: Boolean): [Domain]
   # Find out who helped make this project!
   team: [String]
 }
 
+type Mutation {
+  # Verify/reject a domain (ADMIN ONLY)
+  domainStatus(domainSlug: String!, status: Boolean!): Domain!
+}
+
 # Type for a domain.
-type DomainList {
+type Domain {
   # The repl's slug
   name: String!
   # The repl's language. Will mostly be "nix".
@@ -14,7 +19,7 @@ type DomainList {
   # Who owns the repl?
   owner: String!
   # The URL to access this repl's webserver.
-  url: String!
+  url: String
   # When this database entry was last updated.
   update: String!
 }

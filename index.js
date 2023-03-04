@@ -27,11 +27,13 @@ const bot = new (require('./bot'))(client);
 
 const fetch = require('node-fetch'); //Raadsel here, somehow discord webhooks only work trough node-fetch and not lightfetch 
 
-const replteam = { team: ["Raadsel", "haroon", "CatR3kd", "DillonB07", "VulcanWM", "codingMASTER398", "CosmicBear", "conspicious", "sojs", "bddy"], special: ["CommunityCollab"] } //if more people join they can add themselves here 
+const replteam = { team: ["Raadsel", "haroon", "CatR3kd", "DillonB07", "VulcanWM", "codingMASTER398", "CosmicBear", "conspicious", "sojs", "bddy"], special: ["CommunityCollab", "replit-community-collabs"] } //if more people join they can add themselves here 
 
 replteam.schemaUsers = [
   ...replteam.team
-]
+];
+
+var lastRepls = [];
 
 function updateData(){
   fs.writeFileSync('Data/Current.json', JSON.stringify({}));
@@ -42,10 +44,17 @@ function updateData(){
     let replCount = 0;
     const verifyInterval = setInterval(function(){
       client.request(getReplURLQuery, { id: repls[replCount] }).then(data => {
-        // Send verification
-        sendVerification(data);
+        // Send verification if it hasn't been sent recently
+        if(!(lastRepls.includes(repls[replCount]))) sendVerification(data);
 
-        if(replCount >= 5) clearInterval(verifyInterval);
+        replCount++;
+
+        saveToDB(data.repl)
+        
+        if(replCount >= 5){
+          lastRepls = repls;
+          clearInterval(verifyInterval);
+        }
       });
     }, 10000);
   })
@@ -83,7 +92,7 @@ function sendVerification(data){
       {
         "title": "New repl to be approved!",
         "description": "Approve via <@1032306356692205578>.",
-        "color": 65280,
+        "color": 15884807,
         "fields": [
           {
             "name": "Default Domain",
@@ -118,16 +127,16 @@ function sendVerification(data){
       'Content-Type': 'application/json'
     },
     body: JSON.stringify(hookmsg)
-  }).then(r=>r.text()).then(console.log);
+  });
 }
 
 function sendReplMessage(data, id){
   let message;
   let domain = data.repl.slug.toLowerCase()+'.repls.best';
   if (data.repl.config.isServer || data.repl.language == "html") {
-    message = `Hey, @${data.repl.owner.username}! Congrats on getting your Repl on Trending! You're now eligible for a free \`repls.best\` domain. The default one for your repl is \`${domain}\`. If you would like to claim this, please add \`${domain}\` as a domain in your repl and click verify.  \n*With ❤️ from [The RCC Team](https://replit.com/team/replit-community-efforts)*`;
+    message = `Hey, @${data.repl.owner.username}! Congrats on getting your Repl on Trending! You're now eligible for a free \`repls.best\` domain. The default one for your repl is \`${domain}\`. If you would like to claim this, please add \`${domain}\` as a domain in your repl and click verify.  \n*With ❤️ from [The RCC Team](https://replit.com/@replit-community-collabs)*`;
   } else {
-    message = `Hey, @${data.repl.owner.username}! Congrats on getting your Repl on Trending! You're now eligible for a free \`repls.best\` domain. The default one for your repl is \`${domain}\`. Since your repl is not a webserver, it will redirect to the spotlight page, and is setup already.  \n*With ❤️ from [The RCC Team] (https://replit.com/team/replit-community-efforts)*`;
+    message = `Hey, @${data.repl.owner.username}! Congrats on getting your Repl on Trending! You're now eligible for a free \`repls.best\` domain. The default one for your repl is \`${domain}\`. Since your repl is not a webserver, it will redirect to the spotlight page, and is setup already.  \n*With ❤️ from [The RCC Team] (https://replit.com/@replit-community-collabs)*`;
   }
 
   bot.comment(id, message);
@@ -177,7 +186,7 @@ function saveToDB(repl){
 
 
 function checkData(){
-  if((isEmpty('Data/Backup.json') == true) && (isEmpty('Data/DB.json') == true)){
+  if((isEmpty('Data/Backup.json') == true) && (isEmpty('Data/DB.json') == false)){
     // Only Backup is empty
     fs.writeFileSync('Data/Backup.json', fs.readFileSync('Data/DB.json'));
     console.log("Backup data is lost. Syncing with main");
@@ -193,9 +202,19 @@ function checkData(){
       return;
     } else if(isEmpty('Data/Backup.json') == true){
       // Both DB and backup are empty
-      console.log('All data is lost...'); 
-      // Raadsel here: It would be good id we sent a webhook msg here 
-      // Yeah 
+      console.log('All data is lost, bad'); 
+      const hookmsg = {
+    "content": "All data is lost, badbad",
+    "embeds": [],
+    "attachments": []
+      }
+      fetch(process.env.HOOK, { 
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(hookmsg)
+      });
       fs.writeFileSync('Data/Backup.json', JSON.stringify({}));
       fs.writeFileSync('Data/DB.json', JSON.stringify({}));
 
@@ -237,15 +256,6 @@ const rateLimit = require("express-rate-limit");
 const { graphqlHTTP } = require('express-graphql');
 const { buildSchema } = require('graphql');
 
-/*
-{
-    name: replName.replaceAll('-',' '),
-    language: repl.language,
-    owner: repl.owner.username,
-    url: repl.hostedUrl
-  `}`
-*/
-
 const schema = buildSchema(fs.readFileSync('./schema.graphql', 'utf-8'))
 
 const resolver = {
@@ -263,6 +273,22 @@ const resolver = {
   },
   team() {
     return replteam.team
+  },
+  domainStatus({ domainSlug, status }, {username, id}, context) {
+    if (!replteam.team.includes(username)) {
+      let error = new graphql.GraphQLError(
+        'You can\'t use this mutation.'
+      )
+      throw error;
+    }
+
+    return {
+      name: "Test",
+      language: "nix",
+      owner: "haroon",
+      url: "https://test.haroon.repl.co/",
+      update: ""
+    }
   }
 }
 
@@ -331,7 +357,11 @@ app.use('/graphql', (req, res, next) => {
     graphiql: true,
     validationRules: [
       Introspection(req)
-    ]
+    ],
+    context: {
+      username: req.get('X-Replit-User-Name'),
+      id: req.get('X-Replit-User-Id')
+    }
   })(req, res, next)
 })
 
