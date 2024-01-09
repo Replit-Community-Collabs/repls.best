@@ -27,7 +27,7 @@ const bot = new (require('./bot'))(client);
 
 const fetch = require('node-fetch'); //Raadsel here, somehow discord webhooks only work trough node-fetch and not lightfetch 
 
-const replteam = { team: ["Raadsel", "haroon", "CatR3kd", "DillonB07", "VulcanWM", "codingMASTER398", "CosmicBear", "conspicious", "sojs", "bddy"], special: ["CommunityCollab", "replit-community-collabs"] } //if more people join they can add themselves here 
+const replteam = { team: ["Raadsel", "haroon", "CatR3kd", "DillonB07", "VulcanWM", "codingMASTER398", "CosmicBear", "conspicious", "sojs", "bddy", "PikachuB2005"], special: ["RCC", "CommunityCollab", "replit-community-collabs"] } //if more people join they can add themselves here 
 
 replteam.schemaUsers = [
   ...replteam.team
@@ -67,17 +67,44 @@ setInterval(updateData, 5 * 60 * 1000);
 
 // Verification and creation steps by CatR3kd
 
+function registerNewRecord(record_type, subdomain, content) {
+  fetch(`https://api.cloudflare.com/client/v4/zones/${process.env.CF_ZONE_ID}/dns_records`, {
+    method: 'POST',
+    body: JSON.stringify({
+      type: record_type,
+      name: subdomain+"replsbest",
+      content,
+      ttl: 1
+    }),
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer '+ process.env.CF_API_TOKEN
+    }
+  }).then(r => r.json());
+}
 
-
-function createSubdomain(){
-  // No idea how to do this
+function editExistingRecord(record_type, subdomain, content, cf_id) {
+  fetch(`https://api.cloudflare.com/client/v4/zones/${process.env.CF_ZONE_ID}/dns_records/${cf_id}`, {
+    method: 'PATCH',
+    body: JSON.stringify({
+      content,
+    }),
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer '+ process.env.CF_API_TOKEN
+    }
+  }).then(r => r.json());
 }
 
 // Function to be called once a repl is verified
 function createEntry(data, id){
   sendReplMessage(data, id);
+  
   saveToDB(data.repl);
-  createSubdomain();
+  
+  registerNewRecord("CNAME", data.repl.slug.toLowerCase(), data.repl.id+".id.repl.co");
+  
+  registerNewRecord("TXT", data.repl.slug.toLowerCase(), `replit-verify=${data.repl.id}`);
 }
 
 // Verify via Discord webhook
@@ -134,9 +161,9 @@ function sendReplMessage(data, id){
   let message;
   let domain = data.repl.slug.toLowerCase()+'.repls.best';
   if (data.repl.config.isServer || data.repl.language == "html") {
-    message = `Hey, @${data.repl.owner.username}! Congrats on getting your Repl on Trending! You're now eligible for a free \`repls.best\` domain. The default one for your repl is \`${domain}\`. If you would like to claim this, please add \`${domain}\` as a domain in your repl and click verify.  \n*With ❤️ from [The RCC Team](https://replit.com/@replit-community-collabs)*`;
+    message = `Hey, @${data.repl.owner.username}! Congrats on getting your Repl on Trending! You're now eligible for a free \`repls.best\` domain. The default one for your repl is \`${domain}\`. If you would like to claim this, please add \`${domain}\` as a domain in your repl and click verify.  \n*With ❤️ from [The RCC Team](https://replit.com/@rcc)*`;
   } else {
-    message = `Hey, @${data.repl.owner.username}! Congrats on getting your Repl on Trending! You're now eligible for a free \`repls.best\` domain. The default one for your repl is \`${domain}\`. Since your repl is not a webserver, it will redirect to the spotlight page, and is setup already.  \n*With ❤️ from [The RCC Team] (https://replit.com/@replit-community-collabs)*`;
+    message = `Hey, @${data.repl.owner.username}! Congrats on getting your Repl on Trending! You're now eligible for a free \`repls.best\` domain. The default one for your repl is \`${domain}\`. Since your repl is not a webserver, it will redirect to the spotlight page, and is setup already.  \n*With ❤️ from [The RCC Team] (https://replit.com/@rcc)*`;
   }
 
   bot.comment(id, message);
